@@ -7,7 +7,10 @@ export default function errorHandler(error, req, res, next) {
 		case "Invalid Request":
 			return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error.message);
 
-		case "Data Conflict":
+		case "Request Conflict":
 			return res.status(httpStatus.CONFLICT).send(error.message);
+
+		case "Not Found":
+			return res.status(httpStatus.NOT_FOUND).send(error.message);
 	}
 }

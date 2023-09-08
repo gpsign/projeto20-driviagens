@@ -1,7 +1,7 @@
-import { passengerSchema } from "../schemas/passengers.schemas.js";
+import { flightsSchema } from "../schemas/flights.schema.js";
 
-export function validatePassenger(req, res, next) {
-	const validation = passengerSchema.validate(req.body, {
+export function validateFlight(req, res, next) {
+	const validation = flightsSchema.validate(req.body, {
 		abortEarly: false,
 	});
 
