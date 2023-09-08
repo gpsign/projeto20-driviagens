@@ -1,10 +1,10 @@
 import httpStatus from "http-status";
-import { passengerServices } from "../services/passengers.services.js";
+import { passengersServices } from "../services/passengers.services.js";
 
 async function create(req, res) {
 	const passenger = req.body;
-	await passengerServices.create(passenger);
+	await passengersServices.create(passenger);
 	return res.sendStatus(httpStatus.CREATED);
 }
 
-export const passengerController = { create };
+export const passengersControllers = { create };

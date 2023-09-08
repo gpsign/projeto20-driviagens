@@ -7,4 +7,4 @@ function create(passenger) {
 	);
 }
 
-export const passengerRepositories = { create };
+export const passengersRepositories = { create };
