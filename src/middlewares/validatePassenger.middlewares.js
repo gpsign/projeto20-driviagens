@@ -8,7 +8,9 @@ export function validatePassenger(req, res, next) {
 	if (validation.error) {
 		const error = {
 			type: "Invalid Request",
-			message: validation.error.details.map((detail) => detail.message),
+			message: validation.error.details
+				.map((detail) => detail.message)
+				.join(", "),
 		};
 		throw error;
 	}
