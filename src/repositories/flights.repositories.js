@@ -15,6 +15,8 @@ function read(flight) {
     INNER JOIN cities co ON co.id = f.origin 
     INNER JOIN cities cd ON cd.id = f.destination`;
 
+	let order = `ORDER BY f.date ASC`;
+
 	const queryBuffer = [];
 	const valuesBuffer = [];
 	let cont = 1;
@@ -36,8 +38,9 @@ function read(flight) {
 
 	if (queryBuffer.length > 0) query += " WHERE " + queryBuffer.join("AND ");
 
-	if (valuesBuffer.length > 0) return db.query(`${query};`, valuesBuffer);
-	else return db.query(`${query};`);
+	if (valuesBuffer.length > 0)
+		return db.query(`${query} ${order};`, valuesBuffer);
+	else return db.query(`${query} ${order};`);
 }
 
 export const flightsRepositories = { create, read };
