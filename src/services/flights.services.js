@@ -1,6 +1,9 @@
 import { flightsRepositories } from "../repositories/flights.repositories.js";
 import { citiesRepositories } from "../repositories/cities.repositories.js";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
+
+const dayjsExtended = dayjs.extend(customParseFormat);
 
 async function create(flight) {
 	const { origin, destination, date } = flight;
@@ -34,8 +37,29 @@ async function create(flight) {
 	return;
 }
 
-async function read(flight) {
-	const flightsList = await flightsRepositories.read(flight);
+async function read(flight, config = {}) {
+	const biggerDate = config["bigger-date"];
+	const smallerDate = config["smaller-date"];
+
+	if (typeof biggerDate != typeof smallerDate)
+		throw {
+			type: "Bad Request",
+			message: "Need a bigger date along with a smaller date.",
+		};
+	else if (typeof biggerDate === "string") {
+		if (
+			!(
+				dayjsExtended(biggerDate, "DD-MM-YYYY", true).isValid() &&
+				dayjsExtended(smallerDate, "DD-MM-YYYY", true).isValid()
+			)
+		)
+			throw {
+				type: "Invalid Request",
+				message: "Dates must be in DD-MM-YYYY format.",
+			};
+	}
+
+	const flightsList = await flightsRepositories.read(flight, config);
 	return flightsList;
 }
 

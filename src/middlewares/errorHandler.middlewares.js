@@ -1,16 +1,30 @@
 import httpStatus from "http-status";
 
 export default function errorHandler(error, req, res, next) {
-	console.log(error);
+	const errorInfo = {
+		Status: 500,
+		Error: error.type,
+		Description: error.message,
+	};
 
 	switch (error.type) {
 		case "Invalid Request":
-			return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error.message);
+			errorInfo.Status = httpStatus.UNPROCESSABLE_ENTITY;
+			break;
 
 		case "Request Conflict":
-			return res.status(httpStatus.CONFLICT).send(error.message);
+			errorInfo.Status = httpStatus.CONFLICT;
+			break;
 
 		case "Not Found":
-			return res.status(httpStatus.NOT_FOUND).send(error.message);
+			errorInfo.Status = httpStatus.NOT_FOUND;
+			break;
+
+		case "Bad Request":
+			errorInfo.Status = httpStatus.BAD_REQUEST;
+			break;
 	}
+
+	console.log(errorInfo);
+	return res.status(errorInfo.Status).send(errorInfo.Description);
 }
