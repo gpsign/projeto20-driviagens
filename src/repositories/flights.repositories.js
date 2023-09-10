@@ -1,9 +1,10 @@
 import { db } from "../database/database.connection.js";
+import dayjs from "dayjs";
 
 function create(flight) {
 	return db.query(
 		`INSERT INTO flights (origin, destination, date) VALUES ($1, $2, $3);`,
-		[flight.origin, flight.destination, flight.date]
+		[flight.origin, flight.destination, dayjs(flight.date, "DD-MM-YYYY")]
 	);
 }
 
@@ -37,7 +38,10 @@ function read(params) {
 	}
 	if (biggerDate != undefined) {
 		queryBuffer.push(
-			`f.date >= '${smallerDate}' AND f.date <= '${biggerDate}'`
+			`f.date >= '${dayjs(smallerDate, "DD-MM-YYYY")}' AND f.date <= '${dayjs(
+				biggerDate,
+				"DD-MM-YYYY"
+			)}'`
 		);
 	}
 

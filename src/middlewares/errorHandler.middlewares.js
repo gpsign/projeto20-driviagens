@@ -23,6 +23,10 @@ export default function errorHandler(error, req, res, next) {
 		case "Bad Request":
 			errorInfo.Status = httpStatus.BAD_REQUEST;
 			break;
+
+		default:
+			errorInfo.Status = httpStatus.INTERNAL_SERVER_ERROR;
+			errorInfo.Error = "Internal Server Error";
 	}
 
 	console.log(errorInfo);
