@@ -8,7 +8,7 @@ function create(flight) {
 }
 
 function read(params) {
-	const { origin, destination, biggerDate, smallerDate } = params;
+	const { id, origin, destination, biggerDate, smallerDate } = params;
 	let query = `
 			SELECT f.id, co.name AS "origin", cd.name AS "destination", TO_CHAR(f.date, 'DD-MM-YYYY') AS "date"
 			FROM flights f 
@@ -20,6 +20,11 @@ function read(params) {
 	const valuesBuffer = [];
 	let cont = 1;
 
+	if (id != undefined) {
+		queryBuffer.push(`f.id = $${cont}`);
+		valuesBuffer.push(id);
+		cont++;
+	}
 	if (origin != undefined) {
 		queryBuffer.push(`f.origin = $${cont}`);
 		valuesBuffer.push(origin);

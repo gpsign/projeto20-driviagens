@@ -43,6 +43,7 @@ async function read(params) {
 		smallerDate: params["smaller-date"],
 		origin: undefined,
 		destination: undefined,
+		id: params.id,
 	};
 
 	if (typeof config.biggerDate != typeof config.smallerDate)
