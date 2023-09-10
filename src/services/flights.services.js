@@ -37,26 +37,45 @@ async function create(flight) {
 	return;
 }
 
-async function read(flight, config = {}) {
-	const biggerDate = config["bigger-date"];
-	const smallerDate = config["smaller-date"];
+async function read(flight, params = {}) {
+	const config = {
+		biggerDate: params["bigger-date"],
+		smallerDate: params["smaller-date"],
+		origin: undefined,
+		destination: undefined,
+	};
 
-	if (typeof biggerDate != typeof smallerDate)
+	if (typeof config.biggerDate != typeof config.smallerDate)
 		throw {
 			type: "Bad Request",
 			message: "Need a bigger date along with a smaller date.",
 		};
-	else if (typeof biggerDate === "string") {
+	else if (typeof config.biggerDate === "string") {
 		if (
 			!(
-				dayjsExtended(biggerDate, "DD-MM-YYYY", true).isValid() &&
-				dayjsExtended(smallerDate, "DD-MM-YYYY", true).isValid()
+				dayjsExtended(config.biggerDate, "DD-MM-YYYY", true).isValid() &&
+				dayjsExtended(config.smallerDate, "DD-MM-YYYY", true).isValid()
 			)
 		)
 			throw {
 				type: "Invalid Request",
 				message: "Dates must be in DD-MM-YYYY format.",
 			};
+		if (dayjs(config.smallerDate).isAfter(config.biggerDate))
+			throw {
+				type: "Bad Request",
+				message: "Smaller date is greater than the bigger date.",
+			};
+	}
+
+	if (config.origin != undefined) {
+		const originCity = await citiesRepositories.read(params.origin);
+		config.origin = originCity.rows[0].id;
+	}
+
+	if (config.destination != undefined) {
+		const destinationCity = await citiesRepositories.read(params.destination);
+		config.destination = destinationCity.rows[0].id;
 	}
 
 	const flightsList = await flightsRepositories.read(flight, config);
