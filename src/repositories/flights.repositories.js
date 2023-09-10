@@ -7,15 +7,14 @@ function create(flight) {
 	);
 }
 
-function read(flight) {
-	const { origin, destination, date } = flight;
+function read(params) {
+	const { origin, destination, biggerDate, smallerDate } = params;
 	let query = `
-    SELECT f.id, co.name AS "origin", cd.name AS "destination", TO_CHAR(f.date, 'DD-MM-YYYY') AS "date"
-    FROM flights f 
-    INNER JOIN cities co ON co.id = f.origin 
-    INNER JOIN cities cd ON cd.id = f.destination`;
-
-	let order = `ORDER BY f.date ASC`;
+			SELECT f.id, co.name AS "origin", cd.name AS "destination", TO_CHAR(f.date, 'DD-MM-YYYY') AS "date"
+			FROM flights f 
+			INNER JOIN cities co ON co.id = f.origin 
+			INNER JOIN cities cd ON cd.id = f.destination
+			`;
 
 	const queryBuffer = [];
 	const valuesBuffer = [];
@@ -31,16 +30,17 @@ function read(flight) {
 		valuesBuffer.push(destination);
 		cont++;
 	}
-	if (date != undefined) {
-		queryBuffer.push(`f.date = $${cont}`);
-		valuesBuffer.push(date);
+	if (biggerDate != undefined) {
+		queryBuffer.push(
+			`f.date >= '${smallerDate}' AND f.date <= '${biggerDate}'`
+		);
 	}
 
 	if (queryBuffer.length > 0) query += " WHERE " + queryBuffer.join("AND ");
 
 	if (valuesBuffer.length > 0)
-		return db.query(`${query} ${order};`, valuesBuffer);
-	else return db.query(`${query} ${order};`);
+		return db.query(`${query} ORDER BY f.date ASC;`, valuesBuffer);
+	else return db.query(`${query} ORDER BY f.date ASC;`);
 }
 
 export const flightsRepositories = { create, read };

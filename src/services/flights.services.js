@@ -37,7 +37,7 @@ async function create(flight) {
 	return;
 }
 
-async function read(flight, params = {}) {
+async function read(params) {
 	const config = {
 		biggerDate: params["bigger-date"],
 		smallerDate: params["smaller-date"],
@@ -68,17 +68,20 @@ async function read(flight, params = {}) {
 			};
 	}
 
-	if (config.origin != undefined) {
+	if (params.origin != undefined) {
 		const originCity = await citiesRepositories.read(params.origin);
-		config.origin = originCity.rows[0].id;
+		if (originCity.rows[0]) config.origin = originCity.rows[0].id;
+		else config.origin = -1;
 	}
 
-	if (config.destination != undefined) {
+	if (params.destination != undefined) {
 		const destinationCity = await citiesRepositories.read(params.destination);
-		config.destination = destinationCity.rows[0].id;
+		if (destinationCity.rows[0])
+			config.destination = destinationCity.rows[0].id;
+		else config.destination = -1;
 	}
 
-	const flightsList = await flightsRepositories.read(flight, config);
+	const flightsList = await flightsRepositories.read(config);
 	return flightsList;
 }
 

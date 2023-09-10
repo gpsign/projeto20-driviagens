@@ -7,7 +7,10 @@ function create(name) {
 function read(data) {
 	if (typeof data === "number")
 		return db.query(`SELECT * FROM cities WHERE id = $1;`, [data]);
-	else return db.query(`SELECT * FROM cities WHERE name = $1;`, [data]);
+	else
+		return db.query(`SELECT * FROM cities WHERE LOWER(name) = LOWER($1);`, [
+			data,
+		]);
 }
 
 export const citiesRepositories = { create, read };

@@ -9,10 +9,9 @@ async function create(req, res) {
 }
 
 async function read(req, res) {
-	const flight = req.body;
-	const config = req.query;
+	const params = req.query;
 
-	const flightsList = await flightsServices.read(flight, config);
+	const flightsList = await flightsServices.read(params);
 	return res.status(httpStatus.OK).send(flightsList.rows);
 }
 
