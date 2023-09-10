@@ -17,4 +17,9 @@ async function create(travel) {
 	return;
 }
 
-export const travelsServices = { create };
+async function read(travel){
+    const travelList = await travelsRepositories.read(travel);
+    return travelList;
+}
+
+export const travelsServices = { create, read };

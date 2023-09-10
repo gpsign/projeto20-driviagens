@@ -7,4 +7,10 @@ async function create(req, res) {
 	return res.sendStatus(httpStatus.CREATED);
 }
 
-export const passengersControllers = { create };
+async function travels(req, res) {
+	const { name } = req.query;
+	const travelsList = await passengersServices.travels(name);
+	return res.status(httpStatus.OK).send(travelsList.rows);
+}
+
+export const passengersControllers = { create, travels };

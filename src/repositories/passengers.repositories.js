@@ -8,7 +8,7 @@ function create(passenger) {
 }
 
 function read(params) {
-	const { id, firstName, lastName } = params;
+	const { id, firstName, lastName, name } = params;
 	let query = `SELECT id, firstName AS "firstName", lastName AS "lastName" FROM passengers`;
 
 	const queryBuffer = [];
@@ -18,14 +18,19 @@ function read(params) {
 	if (id != undefined) {
 		return db.query(`${query} WHERE id = $1;`, [id]);
 	}
+	if (name != undefined) {
+		return db.query(`${query} WHERE firstName ILIKE $1 OR lastName ILIKE $1;`, [
+			"%" + name + "%",
+		]);
+	}
 	if (firstName != undefined) {
-		queryBuffer.push(`LOWER(firstName) = LOWER($${cont})`);
-		valuesBuffer.push(firstName);
+		queryBuffer.push(`firstName ILIKE $${cont}`);
+		valuesBuffer.push("%" + firstName + "%");
 		cont++;
 	}
 	if (lastName != undefined) {
-		queryBuffer.push(`LOWER(lastName) = $${cont}`);
-		valuesBuffer.push(lastName);
+		queryBuffer.push(`lastName ILIKE $${cont}`);
+		valuesBuffer.push("%" + lastName + "%");
 	}
 
 	if (queryBuffer.length > 0) query += " WHERE " + queryBuffer.join("AND ");
@@ -34,4 +39,29 @@ function read(params) {
 	else return db.query(`${query};`);
 }
 
-export const passengersRepositories = { create, read };
+function travels(name = undefined) {
+	if (name != undefined)
+		return db.query(
+			`
+			SELECT CONCAT(p.firstName, ' ', p.lastName) AS "passenger", COUNT(t.id) AS travels FROM travels t
+			LEFT JOIN passengers p ON t.passengerId = p.id
+			WHERE firstName ILIKE $1 OR lastName ILIKE $1
+			GROUP BY passenger
+			ORDER BY COUNT(p.id) DESC
+			LIMIT 10;
+		`,
+			["%" + name + "%"]
+		);
+	else
+		return db.query(
+			`
+		SELECT CONCAT(p.firstName, ' ', p.lastName) AS "passenger", COUNT(t.id) AS travels FROM travels t
+		LEFT JOIN passengers p ON t.passengerId = p.id
+		GROUP BY passenger
+		ORDER BY COUNT(p.id) DESC
+		LIMIT 10;
+	`
+		);
+}
+
+export const passengersRepositories = { create, read, travels };
